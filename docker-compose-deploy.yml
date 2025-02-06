@@ -25,13 +25,24 @@ services:
     container_name: reverse_proxy1
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - static_data:/vol/static/
       - media_data:/vol/media/
+      - certbot_conf:/etc/letsencrypt/
+      - certbot_www:/var/www/certbot/
     depends_on:
       - app
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot_conf:/etc/letsencrypt/
+      - certbot_www:/var/www/certbot/
+    entrypoint: certbot certonly --webroot --webroot-path=/var/www/certbot --email calebchebii9@gmail.com --agree-tos --no-eff-email --staging -d chillyme.shop -d www.chillyme.shop
 volumes:
   database_data:
-  pgadmin_data:
   static_data:
   media_data:
+  certbot_www:
+  certbot_conf:

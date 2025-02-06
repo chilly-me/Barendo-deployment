@@ -1,0 +1,11 @@
+[33mcommit 862c258b0af73e77b0654e76157228bad4c10b64[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: chilly-me <calebchebii9@gmail.com>
+Date:   Wed Feb 5 06:54:33 2025 +0300
+
+    Modified both docker-compose and default.conf to allow HTTPS using SSL cert provided by LetsEncrypt
+
+[33mcommit 088b69943623d68730085fdeeba4c1ad4302ffdf[m
+Author: chilly-me <calebchebii9@gmail.com>
+Date:   Wed Feb 5 06:15:47 2025 +0300
+
+    Redone deployment
