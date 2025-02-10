@@ -5,9 +5,8 @@ COPY ./uwsgi_params /etc/nginx/uwsgi_params
 
 USER root
 
-RUN mkdir -p /vol/static
-RUN chmod 755 /vol/static
-RUN mkdir -p /vol/media
-RUN chmod 755 /vol/media
+RUN mkdir -p /vol/static /vol/media /var/www/certbot && \
+    chmod -R 755 /vol/static /vol/media /var/www/certbot && \
+    chown -R nginx:nginx /vol/static /vol/media /var/www/certbot
 
 USER nginx
