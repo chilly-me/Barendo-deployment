@@ -1,0 +1,106 @@
+'''
+TIPS & TRICKS
+-------------
+UPDATED ON: 2023-02-11
+
+LAST EDITED BY:
+WONMO "JOHN" SEONG,
+LEAD DEV. AND THE CEO OF HAVIT
+----------------------------------------------
+HOW TO INSTALL DOCKER-COMPOSE ON DIGITALOCEAN VPS:
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-22-04
+
+DOCKERIZE FLASK + CELERY + REDIS APPLICATION WITH DOCKER-COMPOSE:
+https://nickjanetakis.com/blog/dockerize-a-flask-celery-and-redis-application-with-docker-compose
+https://testdriven.io/blog/flask-and-celery/ <-- PRIMARILY USED THIS TUTORIAL
+
+CELERY VS. GUNICORN WORKERS:
+https://stackoverflow.com/questions/24317917/difference-between-celery-and-gunicorn-workers
+1. Gunicorn solves concurrency of serving HTTP requests - this is "online" code where each request triggers a Django view, which returns a response. Any code that runs in a view will increase the time it takes to get a response to the user, making the website seem slow. So long running tasks should not go in Django views for that reason.
+2. Celery is for running code "offline", where you don't need to return an HTTP response to a user. A Celery task might be triggered by some code inside a Django view, but it could also be triggered by another Celery task, or run on a schedule. Celery uses the model of a worker pulling tasks off of a queue, there are a few Django compatible task frameworks that do this. I give a write up of this architecture here.
+
+CELERY, GUNICORN, AND SUPERVISOR:
+https://medium.com/sightwave-software/setting-up-nginx-gunicorn-celery-redis-supervisor-and-postgres-with-django-to-run-your-python-73c8a1c8c1ba
+
+DEPLOY GITHUB REPO ON DIGITALOCEAN VPS USING SSH KEYS:
+https://medium.com/swlh/how-to-deploy-your-application-to-digital-ocean-using-github-actions-and-save-up-on-ci-cd-costs-74b7315facc2
+
+COMANDS TO RUN ON VPS TO CLONE GITHUB REPO (WORKS ON BOTH PRIVATE AND PUBLIC REPOS):
+1. Login as root
+2. Set up your credentials (GitHub SSH-related) and run the following commands:
+    - apt-get update
+    - apt-get install git
+    - mkdir ~/github && cd ~/github
+    - git clone git@github.com:wonmor/HAVIT-Central.git
+3. To get the latest changes, run git fetch origin
+
+HOW TO RUN DOCKER-COMPOSE ON VPS:
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-22-04
+1. Login as root
+2. Run the following commands:
+    - cd ~/github/HAVIT-Central
+    - docker compose up --build -d // builds and runs the containers in detached mode
+        OR docker compose up --build -d --remove-orphans // builds and runs the containers in detached mode and removes orphan containers
+    - docker compose ps // lists all running containers in Docker engine.
+3. To stop the containers, run:
+    - docker-compose down
+
+HOW TO SET UP NGINX ON UBUNTU VPS TO PROXY PASS TO GUNICORN ON DIGITALOCEAN:
+https://www.datanovia.com/en/lessons/digitalocean-initial-ubuntu-server-setup/
+https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-22-04
+https://www.datanovia.com/en/lessons/digitalocean-how-to-install-nginx-and-ssl/
+
+CAPROVER CLEAN/REMOVE ALL PREVIOUS DEPLOYMENTS:
+docker container prune --force
+docker image prune --all
+
+FORCE MERGE USING GIT:
+git reset --hard origin/main
+
+NGINX - REDIRECT TO DOCKER CONTAINER:
+https://gilyes.com/docker-nginx-letsencrypt/
+https://github.com/nginx-proxy/acme-companion
+https://github.com/nginx-proxy/acme-companion/wiki/Docker-Compose
+https://github.com/evertramos/nginx-proxy-automation
+https://github.com/buchdag/letsencrypt-nginx-proxy-companion-compose
+https://testdriven.io/blog/dockerizing-flask-with-postgres-gunicorn-and-nginx/
+https://pentacent.medium.com/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71 <--- THIS IS THE BEST TUTORIAL
+Simply run docker-compose up and enjoy your HTTPS-secured website or app.
+Then run chmod +x init-letsencrypt.sh and sudo ./init-letsencrypt.sh.
+
+VVIP: HOW TO RUN THIS APP ON VPS:
+1. Login as root, run sudo chmod +x init_letsencrypt.sh
+2. Now for the bit… that tends to go wrong. Navigate into your remote project folder, and run the initialization script (Run ./<Script-Name>.sh on Terminal). First, docker will build the images, and then run through the script step-by-step as described above. Now, this worked first time for me while putting together the tutorial, but in the past it has taken me hours to get everything set up correctly. The main problem was usually the locations of files: the script would save it to some directory, which was mapped to a volume that nginx was incorrectly mapped to, and so on. If you end up needing to debug, you can run the commands in the script yourself, substituting variables as you go. Pay close attention to the logs — nginx is often quite good at telling you what it’s missing.
+3. If all goes to plan, you’ll see a nice little printout from Lets Encrypt and Certbot saying “Congratulations” and your script will exit successfully.
+
+HOW TO OPEN/ALLOW PORTS ON DIGITALOCEAN:
+https://www.digitalocean.com/community/tutorials/opening-a-port-on-linux
+sudo ufw allow <PORT_NUMBER>
+
+WHAT ARE DNS RECORDS?
+https://docs.digitalocean.com/products/networking/dns/how-to/manage-records/
+PS: Highers the TTL, the longer it takes for the DNS record to update.
+But it will be cached for longer, which means that there will be less load on the DNS server.
+
+TIP: MAKE SURE YOU SET UP THE CUSTOM NAMESPACES FOR DIGITALOCEAN ON GOOGLE DOMAINS:
+https://docs.digitalocean.com/tutorials/dns-registrars/
+
+DOCKER SWARM VS. DOCKER COMPOSE:
+The difference between Docker Swarm and Docker Compose is that Compose is used for configuring multiple containers in the same host. Docker Swarm is different in that it is a container orchestration tool. This means that Docker Swarm lets you connect containers to multiple hosts similar to Kubernetes.
+
+Cannot load certificate /etc/letsencrypt/live/havit.space/fullchain.pem: BIO_new_file() failed (SSL: error:02001002:system library:fopen:No such file or directory FIX:
+https://community.letsencrypt.org/t/lets-encrypt-with-nginx-i-got-error-ssl-error-02001002-system-library-fopen-no-such-file-or-directory-fopen-etc-letsencrypt-live-xxx-com-fullchain-pem-r/20990/5
+
+RUNNING MULTIPLE DOCKER COMPOSE FILES:
+https://stackoverflow.com/questions/43957259/run-multiple-docker-compose
+
+
+nginx: [emerg] open() "/etc/letsencrypt/options-ssl-nginx.conf" failed (2: No such file or directory) in /etc/nginx/conf.d/app.conf:20 FIX:
+https://stackoverflow.com/questions/64940480/nginx-letsencrypt-error-etc-letsencrypt-options-ssl-nginx-conf-no-such-file-o
+
+VVVIP: RESOLVE NGINX + DOCKER + LETSENCRYPT ISSUES!
+https://stackoverflow.com/questions/68449947/certbot-failing-acme-challenge-connection-refused
+Basically gotta remove all the HTTPS SSL-related stuff from both the docker-compose.yml and the nginx.conf file. 
+Then run the init-letsencrypt.sh script. Then add the HTTPS SSL-related stuff back to both the docker-compose.yml and the nginx.conf file. 
+Then run docker-compose up -d --build. Then run the init-letsencrypt.sh script again.
+'''
